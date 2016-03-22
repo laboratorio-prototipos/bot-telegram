@@ -1,8 +1,7 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, scoped_session
-from cachama_templates_new import cachama_templates_new as cachama_templates_new
-from cachama_templates import cachama_templates
+from cachama_templates import new_cachama, old_cachama
 import telebot, random, datetime, time
 
 DEBUG = True
@@ -49,24 +48,13 @@ def cachama(message):
         new_cachamas = generate_new_cachamas()
         user.cachamas.total = user.cachamas.total+new_cachamas
         user.cachamas.last_call = datetime.datetime.now()
-        response = random.choice(cachama_templates_new).format(name=message.from_user.first_name,new=new_cachamas,total=user.cachamas.total)
+        response = random.choice(new_cachama).format(name=message.from_user.first_name,new=new_cachamas,total=user.cachamas.total)
         session.commit()
     else:
-        response = random.choice(cachama_templates).format(name=message.from_user.first_name,total=user.cachamas.total)
+        response = random.choice(old_cachama).format(name=message.from_user.first_name,total=user.cachamas.total)
         pass
     Session.remove()
     bot.send_message(message.chat.id,response)
-
-def can_get_cachama(id_query):
-    user = session.query(User).filter(User.id == id_query).one_or_none()
-    if user is None:
-        new_user(id)
-    else:
-	delta = datetime.datetime.now() - user.last_call
-        if delta.seconds < (MAX_TIME):
-            return False
-        else:
-            return True
 
 def new_user(id_new):
     user = User(id=id_new)
