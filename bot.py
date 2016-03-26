@@ -13,8 +13,8 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer,nullable=False,primary_key=True)
+    username = Column(String)
     cachamas = relationship("Cachama",backref="user",uselist=False)
-    
 class Cachama(Base):
     __tablename__ = 'cachama'
     id = Column(Integer,ForeignKey("user.id"),nullable=False,primary_key=True)
